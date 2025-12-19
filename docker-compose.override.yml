@@ -1,0 +1,18 @@
+services:
+  postgres:
+    ports:
+      - '${DB_PORT}:5432'
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: zen_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PG_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - '${PG_PORT}:80'
+    depends_on:
+      - postgres
+    networks:
+      - zen_network
