@@ -3,6 +3,7 @@ import { CoreApiController } from './core-api.controller';
 import { CoreApiService } from './core-api.service';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         synchronize: true,
       }),
     }),
+    UsersModule,
   ],
   controllers: [CoreApiController],
   providers: [CoreApiService],
