@@ -1,5 +1,6 @@
 import { AbstractEntity } from '@app/common';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
+import { DriverProfile } from './driver.entity';
 
 export enum UserRole {
   CLIENT = 'client',
@@ -39,4 +40,9 @@ export class User extends AbstractEntity {
   isEmailVerified: boolean;
 
   // Campo adicional para vincular user con driver profile si es el caso
+  @OneToOne(() => DriverProfile, (driverProfile) => driverProfile.user, {
+    nullable: true,
+    cascade: true,
+  })
+  driverProfile: DriverProfile;
 }

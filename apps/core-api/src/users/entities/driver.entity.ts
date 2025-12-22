@@ -1,5 +1,6 @@
 import { AbstractEntity } from '@app/common';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { User } from './user.entity';
 
 export enum DriverStatus {
   ONLINE = 'online', // Puede recibir pedidos
@@ -38,4 +39,8 @@ export class DriverProfile extends AbstractEntity {
     }*/
   @Column({ type: 'jsonb', nullable: true })
   documents: Record<string, any>;
+
+  @OneToOne(() => User, (user) => user.driverProfile)
+  @JoinColumn()
+  user: User;
 }
