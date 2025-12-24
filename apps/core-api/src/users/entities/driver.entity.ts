@@ -1,6 +1,7 @@
 import { AbstractEntity } from '@app/common';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { User } from './user.entity';
+import { DriverDocumentsDto } from '../dto/driver-documents.dto';
 
 export enum DriverStatus {
   ONLINE = 'online', // Puede recibir pedidos
@@ -11,14 +12,14 @@ export enum DriverStatus {
 
 @Entity('driver_profiles')
 export class DriverProfile extends AbstractEntity {
-  @Column({ type: 'varchar', unique: true, length: 50 })
+  @Column({ type: 'varchar', unique: true, length: 12 })
   rut: string;
 
-  @Column({ type: 'varchar', unique: true, length: 50 })
-  licenceNumber: string;
+  @Column({ type: 'varchar', unique: true, length: 12 })
+  licenseNumber: string;
 
   @Column({ type: 'date', nullable: true })
-  licenceExpiryDate: Date;
+  licenseExpiryDate: Date;
 
   //Fecha de la utlima revision de antecedentes, lo ideal revisar cada 1 año
   @Column({ type: 'date', nullable: true })
@@ -38,7 +39,7 @@ export class DriverProfile extends AbstractEntity {
       "criminalRecord": { "url": "s3://..." }
     }*/
   @Column({ type: 'jsonb', nullable: true })
-  documents: Record<string, any>;
+  documents: DriverDocumentsDto;
 
   @OneToOne(() => User, (user) => user.driverProfile)
   @JoinColumn()
