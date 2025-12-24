@@ -12,10 +12,10 @@ export enum DriverStatus {
 @Entity('driver_profiles')
 export class DriverProfile extends AbstractEntity {
   @Column({ type: 'varchar', unique: true, length: 50 })
-  nationalId: string;
+  rut: string;
 
   @Column({ type: 'varchar', unique: true, length: 50 })
-  licenseNumber: string;
+  licenceNumber: string;
 
   @Column({ type: 'date', nullable: true })
   licenceExpiryDate: Date;
