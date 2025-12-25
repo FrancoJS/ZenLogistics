@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsStrongPassword,
   Matches,
   MinLength,
   ValidateNested,
@@ -45,9 +46,19 @@ export class RegisterClientDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
-  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'La contraseña debe tener mayúsculas, minúsculas y números',
-  })
+  @IsStrongPassword(
+    {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    },
+    {
+      message:
+        'La contraseña no es lo suficientemente fuerte. Debe incluir al menos una letra mayúscula, una letra minúscula, un número y un símbolo.',
+    },
+  )
   password: string;
 
   @ApiProperty({
