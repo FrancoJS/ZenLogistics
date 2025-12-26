@@ -13,7 +13,7 @@ import {
 } from 'class-validator';
 import { DriverDocumentsDto } from '../../users/dto/driver-documents.dto';
 
-export class RegisterClientDto {
+export class RegisterDriverDto {
   @ApiProperty({
     example: 'Juan Pérez',
     required: true,
