@@ -1,4 +1,4 @@
-import { AuthProvider } from '../enums/user-role.enum';
+import { AuthProvider } from '../enums/auth-provider.enum';
 
 export interface ICreateClientParams {
   fullName: string;
