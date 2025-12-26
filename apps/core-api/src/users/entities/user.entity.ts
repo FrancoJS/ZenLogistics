@@ -2,8 +2,9 @@ import { AbstractEntity } from '@app/common';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
 import { DriverProfile } from './driver.entity';
 import * as bcrypt from 'bcrypt';
-import { UserRole } from '../enums/auth-provider.enum';
-import { AuthProvider } from '../enums/user-role.enum';
+import { AuthProvider } from '../enums/auth-provider.enum';
+import { UserRole } from '../enums/user-role.enum';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User extends AbstractEntity {
@@ -11,6 +12,7 @@ export class User extends AbstractEntity {
   email: string;
 
   @Column({ type: 'varchar', length: 255, select: false, nullable: true })
+  @Exclude()
   password: string;
 
   // Hasheamos la contraseña antes de insertar o actualizar el usuario
@@ -31,7 +33,7 @@ export class User extends AbstractEntity {
   @Column({ type: 'varchar', length: 150 })
   fullName: string;
 
-  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true, unique: true })
   phone: string;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.CLIENT })

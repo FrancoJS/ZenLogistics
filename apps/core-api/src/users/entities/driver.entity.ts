@@ -2,6 +2,7 @@ import { AbstractEntity } from '@app/common';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { User } from './user.entity';
 import { DriverDocumentsDto } from '../dto/driver-documents.dto';
+import { Exclude } from 'class-transformer';
 
 export enum DriverStatus {
   ONLINE = 'online', // Puede recibir pedidos
@@ -43,5 +44,6 @@ export class DriverProfile extends AbstractEntity {
 
   @OneToOne(() => User, (user) => user.driverProfile)
   @JoinColumn()
+  @Exclude()
   user: User;
 }
