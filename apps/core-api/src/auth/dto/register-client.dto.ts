@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   IsStrongPassword,
+  Matches,
   MinLength,
 } from 'class-validator';
 
@@ -58,6 +59,9 @@ export class RegisterClientDto {
   @ApiProperty({
     example: '+56912345678',
     required: false,
+  })
+  @Matches(/^\+569[0-9]{8}$/, {
+    message: 'El teléfono debe tener formato chileno válido (Ej: +56912345678)',
   })
   @IsString()
   @IsOptional()

@@ -67,6 +67,9 @@ export class RegisterDriverDto {
   })
   @IsString()
   @IsOptional()
+  @Matches(/^\+569[0-9]{8}$/, {
+    message: 'El teléfono debe tener formato chileno válido (Ej: +56912345678)',
+  })
   phone?: string;
 
   @ApiProperty({
