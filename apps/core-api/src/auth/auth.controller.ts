@@ -1,7 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterClientDto } from './dto/register-client.dto';
 import { RegisterDriverDto } from './dto/register-driver.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -16,4 +18,8 @@ export class AuthController {
   async registerDriver(@Body() registerDriverDto: RegisterDriverDto) {
     return await this.authService.registerDriver(registerDriverDto);
   }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@Req() req: Request) {}
 }
