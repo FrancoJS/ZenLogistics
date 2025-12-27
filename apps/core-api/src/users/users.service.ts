@@ -46,4 +46,12 @@ export class UsersService {
 
     return await this.userRepository.save(user);
   }
+
+  async findOneByEmail(email: string) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .addSelect('user.password')
+      .getOne();
+  }
 }

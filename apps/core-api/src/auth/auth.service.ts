@@ -5,6 +5,7 @@ import { RegisterDriverDto } from './dto/register-driver.dto';
 import { AuthProvider } from '../users/enums/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from './interfaces/jwt-payload';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,18 @@ export class AuthService {
 
   private getJwtToken(payload: IJwtPayload) {
     return this.jwtService.sign(payload);
+  }
+
+  async validateUser(email: string, password: string) {
+    const user = await this.userService.findOneByEmail(email);
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const { password, ...result } = user;
+
+      return result;
+    }
+
+    return null;
   }
 
   async registerClient(registerClientDto: RegisterClientDto) {
