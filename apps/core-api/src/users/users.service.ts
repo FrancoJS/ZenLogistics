@@ -54,4 +54,11 @@ export class UsersService {
       .addSelect('user.password')
       .getOne();
   }
+
+  async findOneById(id: string) {
+    return await this.userRepository.findOne({
+      where: { id },
+      relations: ['driverProfile'],
+    });
+  }
 }
