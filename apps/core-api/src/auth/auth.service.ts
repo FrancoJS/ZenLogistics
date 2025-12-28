@@ -6,6 +6,7 @@ import { AuthProvider } from '../users/enums/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from './interfaces/jwt-payload';
 import * as bcrypt from 'bcrypt';
+import { IActiveUser } from './interfaces/active-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -14,8 +15,21 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private getJwtToken(payload: IJwtPayload) {
-    return this.jwtService.sign(payload);
+  private async getJwtToken(payload: IJwtPayload) {
+    return await this.jwtService.signAsync(payload);
+  }
+
+  async login(user: IActiveUser) {
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    return {
+      token: await this.jwtService.signAsync(payload),
+      user,
+    };
   }
 
   async validateUser(email: string, password: string) {
