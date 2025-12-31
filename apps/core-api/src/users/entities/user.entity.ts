@@ -54,4 +54,12 @@ export class User extends AbstractEntity {
     cascade: true,
   })
   driverProfile: DriverProfile;
+
+  @Column({ nullable: true })
+  @Exclude()
+  refreshToken: string;
+
+  @Column({ type: 'int' })
+  @Exclude()
+  tokenVersion: number;
 }
