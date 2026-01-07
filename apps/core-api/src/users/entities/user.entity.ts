@@ -17,7 +17,6 @@ export class User extends AbstractEntity {
 
   // Hasheamos la contraseña antes de insertar o actualizar el usuario
   @BeforeInsert()
-  @BeforeUpdate()
   async hashPassword() {
     if (!this.password) return;
 
@@ -55,11 +54,16 @@ export class User extends AbstractEntity {
   })
   driverProfile: DriverProfile;
 
-  @Column({ nullable: true })
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    select: false,
+    name: 'refreshToken',
+  })
   @Exclude()
-  refreshToken: string;
+  refreshToken: string | null;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', select: false, default: 1 })
   @Exclude()
-  tokenVersion: number;
+  tokenVersion: number = 1;
 }

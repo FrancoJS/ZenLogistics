@@ -13,7 +13,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string) {
-    const user = await this.authService.validateUser(email, password);
+    const cleanEmail = email.trim().toLowerCase();
+
+    const user = await this.authService.validateUser(cleanEmail, password);
 
     if (!user) {
       throw new UnauthorizedException('Usuario o contraseña incorrectas');
@@ -23,7 +25,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       id: user.id,
       email: user.email,
       role: user.role,
-      hasDriverProfile: !!user.driverProfile,
+      driverId: user.driverProfile?.id,
+      tokenVersion: user.tokenVersion,
     };
 
     return activeUser;

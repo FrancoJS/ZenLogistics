@@ -19,17 +19,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: IJwtPayload) {
-    const { sub: id } = payload;
+    const { sub: id, ver: tokenVersion } = payload;
 
-    const user = await this.userService.findOneById(id);
+    const user = await this.userService.findForJwtValidate(id);
 
     if (!user) throw new UnauthorizedException('Token no valido');
+
+    if (tokenVersion !== user.tokenVersion) {
+      throw new UnauthorizedException('Sesión caducada');
+    }
 
     return {
       id: user.id,
       email: user.email,
       role: user.role,
-      hasDriverProfile: !!user.driverProfile,
+      driverId: user.driverProfile?.id,
+      tokenVersion: user.tokenVersion,
     };
   }
 }

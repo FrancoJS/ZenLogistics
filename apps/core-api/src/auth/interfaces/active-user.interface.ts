@@ -2,5 +2,6 @@ export interface IActiveUser {
   id: string;
   email: string;
   role: string;
-  hasDriverProfile: boolean;
+  driverId: string | null;
+  tokenVersion: number;
 }
