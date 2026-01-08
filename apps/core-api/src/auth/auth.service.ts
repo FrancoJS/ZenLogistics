@@ -1,14 +1,16 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { RegisterClientDto } from './dto/register-client.dto';
 import { RegisterDriverDto } from './dto/register-driver.dto';
 import { AuthProvider } from '../../../../libs/common/src/enums/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from './interfaces/jwt-payload';
-import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import * as argon2 from 'argon2';
-import { IActiveUser } from '@app/common';
+import {
+  HASHING_SERVICE_TOKEN,
+  IActiveUser,
+  IHashingService,
+} from '@app/common';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,8 @@ export class AuthService {
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @Inject(HASHING_SERVICE_TOKEN)
+    private readonly hashingService: IHashingService,
   ) {}
 
   async login(user: IActiveUser) {
@@ -33,7 +37,7 @@ export class AuthService {
   async validateUser(email: string, password: string) {
     const user = await this.userService.findForLogin(email);
 
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (user && (await this.hashingService.compare(password, user.password))) {
       const { password, ...result } = user;
 
       return result;
@@ -111,7 +115,7 @@ export class AuthService {
   }
 
   private async updateRefreshTokenHash(userId: string, refreshToken: string) {
-    const hash = await argon2.hash(refreshToken);
+    const hash = await this.hashingService.hash(refreshToken);
 
     await this.userService.setRefreshToken(hash, userId);
   }
@@ -123,9 +127,9 @@ export class AuthService {
       throw new ForbiddenException('Acceso denegado');
     }
 
-    const refreshTokenMatches = await argon2.verify(
-      user.refreshToken,
+    const refreshTokenMatches = await this.hashingService.compare(
       refreshToken,
+      user.refreshToken,
     );
 
     if (!refreshTokenMatches) {
