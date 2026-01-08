@@ -11,6 +11,7 @@ import {
   IActiveUser,
   IHashingService,
 } from '@app/common';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -37,17 +38,15 @@ export class AuthService {
   async validateUser(email: string, password: string) {
     const user = await this.userService.findForLogin(email);
 
-    if (!user?.password) {
+    if (!user?.password || !user) {
       return null;
     }
 
-    if (user && (await this.hashingService.compare(password, user.password))) {
+    if (await this.hashingService.compare(password, user.password)) {
       const { password, ...result } = user;
 
       return result;
     }
-
-    return null;
   }
 
   async registerLocalClient(dto: RegisterLocalClientDto) {
@@ -56,22 +55,7 @@ export class AuthService {
       authProvider: AuthProvider.LOCAL,
     });
 
-    const activeUser: IActiveUser = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      driverId: user.driverProfile?.id,
-      tokenVersion: user.tokenVersion,
-    };
-
-    const tokens = await this.getTokens(activeUser);
-
-    await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
-
-    return {
-      user,
-      tokens,
-    };
+    return await this.generateAuthResponse(user);
   }
 
   async registerLocalDriver(dto: RegisterLocalDriverDto) {
@@ -80,6 +64,10 @@ export class AuthService {
       authProvider: AuthProvider.LOCAL,
     });
 
+    return await this.generateAuthResponse(user);
+  }
+
+  private async generateAuthResponse(user: User) {
     const activeUser: IActiveUser = {
       id: user.id,
       email: user.email,
