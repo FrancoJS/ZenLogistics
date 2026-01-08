@@ -1,10 +1,10 @@
 import { DriverDocumentsDto } from '../dto/driver-documents.dto';
-import { AuthProvider } from '../../../../../libs/common/src/enums/auth-provider.enum';
+import { AuthProvider } from '@app/common';
 
-export interface ICreateDriverParams {
+export interface ICreateLocalDriverParams {
   fullName: string;
   email: string;
-  password?: string;
+  password: string;
   phone?: string;
   authProvider: AuthProvider;
   rut: string;

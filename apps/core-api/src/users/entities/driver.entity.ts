@@ -13,18 +13,18 @@ export enum DriverStatus {
 
 @Entity('driver_profiles')
 export class DriverProfile extends AbstractEntity {
-  @Column({ type: 'varchar', unique: true, length: 12 })
-  rut: string;
+  @Column({ type: 'varchar', unique: true, length: 12, nullable: true })
+  rut: string | null;
 
   @Column({ type: 'varchar', unique: true, length: 12 })
   licenseNumber: string;
 
   @Column({ type: 'date', nullable: true })
-  licenseExpiryDate: Date;
+  licenseExpiryDate: Date | null;
 
   //Fecha de la utlima revision de antecedentes, lo ideal revisar cada 1 año
   @Column({ type: 'date', nullable: true })
-  lastBackgroundCheckDate: Date;
+  lastBackgroundCheckDate: Date | null;
 
   @Column({ default: false })
   isVerified: boolean;
@@ -40,7 +40,7 @@ export class DriverProfile extends AbstractEntity {
       "criminalRecord": { "url": "s3://..." }
     }*/
   @Column({ type: 'jsonb', nullable: true })
-  documents: DriverDocumentsDto;
+  documents: DriverDocumentsDto | null;
 
   @OneToOne(() => User, (user) => user.driverProfile)
   @JoinColumn()

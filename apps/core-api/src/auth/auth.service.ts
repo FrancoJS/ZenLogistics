@@ -1,7 +1,7 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { RegisterClientDto } from './dto/register-client.dto';
-import { RegisterDriverDto } from './dto/register-driver.dto';
+import { RegisterLocalClientDto } from './dto/register-local-client.dto';
+import { RegisterLocalDriverDto } from './dto/register-local-driver.dto';
 import { AuthProvider } from '../../../../libs/common/src/enums/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from './interfaces/jwt-payload';
@@ -37,6 +37,10 @@ export class AuthService {
   async validateUser(email: string, password: string) {
     const user = await this.userService.findForLogin(email);
 
+    if (!user?.password) {
+      return null;
+    }
+
     if (user && (await this.hashingService.compare(password, user.password))) {
       const { password, ...result } = user;
 
@@ -46,9 +50,9 @@ export class AuthService {
     return null;
   }
 
-  async registerClient(registerClientDto: RegisterClientDto) {
-    const user = await this.userService.createClient({
-      ...registerClientDto,
+  async registerLocalClient(dto: RegisterLocalClientDto) {
+    const user = await this.userService.createLocalClient({
+      ...dto,
       authProvider: AuthProvider.LOCAL,
     });
 
@@ -70,9 +74,9 @@ export class AuthService {
     };
   }
 
-  async registerDriver(registerDriverDto: RegisterDriverDto) {
-    const user = await this.userService.createDriver({
-      ...registerDriverDto,
+  async registerLocalDriver(dto: RegisterLocalDriverDto) {
+    const user = await this.userService.createLocalDriver({
+      ...dto,
       authProvider: AuthProvider.LOCAL,
     });
 

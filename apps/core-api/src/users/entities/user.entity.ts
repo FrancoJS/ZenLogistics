@@ -1,7 +1,6 @@
 import { AbstractEntity, AuthProvider, UserRole } from '@app/common';
-import { BeforeInsert, Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 import { DriverProfile } from './driver.entity';
-import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 
 @Entity('users')
@@ -11,21 +10,7 @@ export class User extends AbstractEntity {
 
   @Column({ type: 'varchar', length: 255, select: false, nullable: true })
   @Exclude()
-  password: string;
-
-  // Hasheamos la contraseña antes de insertar o actualizar el usuario
-  @BeforeInsert()
-  async hashPassword() {
-    if (!this.password) return;
-
-    // Regex para verificar si la contraseña ya está hasheada
-    const isAlreadyHashed = /^\$2[aby]\$.{56}$/.test(this.password);
-
-    if (!isAlreadyHashed) {
-      const genSalt = await bcrypt.genSalt();
-      this.password = await bcrypt.hash(this.password, genSalt);
-    }
-  }
+  password: string | null;
 
   @Column({ type: 'varchar', length: 150 })
   fullName: string;

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { TransformFnParams } from 'class-transformer';
 import {
   IsEmail,
@@ -9,14 +9,11 @@ import {
   IsStrongPassword,
   Matches,
   MinLength,
-  ValidateNested,
 } from 'class-validator';
-import { DriverDocumentsDto } from '../../users/dto/driver-documents.dto';
 
-export class RegisterDriverDto {
+export class RegisterLocalClientDto {
   @ApiProperty({
     example: 'Juan Pérez',
-    required: true,
   })
   @Transform(({ value }) => {
     return typeof value === 'string' ? value.trim() : (value as string);
@@ -27,7 +24,6 @@ export class RegisterDriverDto {
 
   @ApiProperty({
     example: 'example@example.com',
-    required: true,
   })
   @Transform(({ value }: TransformFnParams) => {
     return typeof value === 'string'
@@ -40,7 +36,6 @@ export class RegisterDriverDto {
 
   @ApiProperty({
     example: 'ClaveSegura123!',
-    required: true,
     minLength: 8,
   })
   @IsString()
@@ -65,36 +60,10 @@ export class RegisterDriverDto {
     example: '+56912345678',
     required: false,
   })
-  @IsString()
-  @IsOptional()
   @Matches(/^\+569[0-9]{8}$/, {
     message: 'El teléfono debe tener formato chileno válido (Ej: +56912345678)',
   })
-  phone?: string;
-
-  @ApiProperty({
-    example: '12345678k',
-    required: true,
-  })
   @IsString()
-  @IsNotEmpty()
-  @Transform(({ value }) => {
-    if (typeof value !== 'string') return value as string;
-
-    return value.replace(/[^0-9kK]/g, '').toUpperCase();
-  })
-  @Matches(/^[0-9]{7,8}[0-9K]$/, {
-    message: 'El formato del RUT no es válido (ej: 12345678K)',
-  })
-  rut: string;
-
-  @ApiProperty({
-    description: 'Documentos del conductor para verificación',
-    type: () => DriverDocumentsDto,
-    required: false,
-  })
   @IsOptional()
-  @Type(() => DriverDocumentsDto)
-  @ValidateNested()
-  documents?: DriverDocumentsDto;
+  phone?: string;
 }

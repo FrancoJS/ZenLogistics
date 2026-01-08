@@ -1,29 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { ICreateClientParams } from './interfaces/create-client-params.interface';
-import { ICreateDriverParams } from './interfaces/create-driver-params.interface';
+import { ICreateLocalClientParams } from './interfaces/create-local-client-params.interface';
+import { ICreateLocalDriverParams } from './interfaces/create-local-driver-params.interface';
 import { DriverProfile } from './entities/driver.entity';
 import { UserRole } from '../../../../libs/common/src/enums/user-role.enum';
+import { HASHING_SERVICE_TOKEN, IHashingService } from '@app/common';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Inject(HASHING_SERVICE_TOKEN)
+    private readonly hashingService: IHashingService,
   ) {}
 
-  async createClient(params: ICreateClientParams) {
+  async createLocalClient(params: ICreateLocalClientParams) {
+    const hashedPassword = await this.hashingService.hash(params.password);
+
     const user = this.userRepository.create({
       ...params,
+      password: hashedPassword,
       role: UserRole.CLIENT,
     });
 
     return await this.userRepository.save(user);
   }
 
-  async createDriver(params: ICreateDriverParams) {
+  async createLocalDriver(params: ICreateLocalDriverParams) {
     const { rut, documents, ...userData } = params;
 
     const licenseNumber = rut;
@@ -36,8 +42,10 @@ export class UsersService {
       driverProfile.documents = documents;
     }
 
+    const hashedPassword = await this.hashingService.hash(params.password);
     const user = this.userRepository.create({
       ...userData,
+      password: hashedPassword,
       role: UserRole.DRIVER,
     });
 

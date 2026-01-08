@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterClientDto } from './dto/register-client.dto';
-import { RegisterDriverDto } from './dto/register-driver.dto';
+import { RegisterLocalClientDto } from './dto/register-local-client.dto';
+import { RegisterLocalDriverDto } from './dto/register-local-driver.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { IRefreshTokenPayload } from './interfaces/refresh-jwt-payload';
@@ -14,13 +14,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register/client')
-  async registerClient(@Body() registerClientDto: RegisterClientDto) {
-    return await this.authService.registerClient(registerClientDto);
+  async registerLocalClient(@Body() dto: RegisterLocalClientDto) {
+    return await this.authService.registerLocalClient(dto);
   }
 
   @Post('register/driver')
-  async registerDriver(@Body() registerDriverDto: RegisterDriverDto) {
-    return await this.authService.registerDriver(registerDriverDto);
+  async registerLocalDriver(@Body() dto: RegisterLocalDriverDto) {
+    return await this.authService.registerLocalDriver(dto);
   }
 
   @UseGuards(LocalAuthGuard)
