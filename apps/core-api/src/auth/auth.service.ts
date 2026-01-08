@@ -2,13 +2,13 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { RegisterClientDto } from './dto/register-client.dto';
 import { RegisterDriverDto } from './dto/register-driver.dto';
-import { AuthProvider } from '../users/enums/auth-provider.enum';
+import { AuthProvider } from '../../../../libs/common/src/enums/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from './interfaces/jwt-payload';
 import * as bcrypt from 'bcrypt';
-import { IActiveUser } from './interfaces/active-user.interface';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
+import { IActiveUser } from '@app/common';
 
 @Injectable()
 export class AuthService {

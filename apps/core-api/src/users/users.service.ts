@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { ICreateClientParams } from './interfaces/create-client-params.interface';
 import { ICreateDriverParams } from './interfaces/create-driver-params.interface';
 import { DriverProfile } from './entities/driver.entity';
-import { UserRole } from './enums/user-role.enum';
+import { UserRole } from '../../../../libs/common/src/enums/user-role.enum';
 
 @Injectable()
 export class UsersService {

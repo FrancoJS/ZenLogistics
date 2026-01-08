@@ -1,9 +1,7 @@
-import { AbstractEntity } from '@app/common';
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
+import { AbstractEntity, AuthProvider, UserRole } from '@app/common';
+import { BeforeInsert, Column, Entity, OneToOne } from 'typeorm';
 import { DriverProfile } from './driver.entity';
 import * as bcrypt from 'bcrypt';
-import { AuthProvider } from '../enums/auth-provider.enum';
-import { UserRole } from '../enums/user-role.enum';
 import { Exclude } from 'class-transformer';
 
 @Entity('users')

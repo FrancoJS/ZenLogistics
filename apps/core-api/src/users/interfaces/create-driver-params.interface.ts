@@ -1,5 +1,5 @@
 import { DriverDocumentsDto } from '../dto/driver-documents.dto';
-import { AuthProvider } from '../enums/auth-provider.enum';
+import { AuthProvider } from '../../../../../libs/common/src/enums/auth-provider.enum';
 
 export interface ICreateDriverParams {
   fullName: string;

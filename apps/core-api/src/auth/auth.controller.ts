@@ -3,13 +3,11 @@ import { AuthService } from './auth.service';
 import { RegisterClientDto } from './dto/register-client.dto';
 import { RegisterDriverDto } from './dto/register-driver.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { IActiveUser } from './interfaces/active-user.interface';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { GetUser } from './decorators/get-user.decorator';
 import { IRefreshTokenPayload } from './interfaces/refresh-jwt-payload';
-import { LoginUserDto } from './dto/login-user.dto';
-import { ref } from 'process';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { GetUser } from '@app/common';
+import { IActiveUser } from '@app/common';
 
 @Controller('auth')
 export class AuthController {
@@ -27,7 +25,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() loginDto: LoginUserDto, @GetUser() user: IActiveUser) {
+  async login(@GetUser() user: IActiveUser) {
     return await this.authService.login(user);
   }
 
