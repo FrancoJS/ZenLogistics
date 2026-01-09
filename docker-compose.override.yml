@@ -16,3 +16,7 @@ services:
       - postgres
     networks:
       - zen_network
+
+  redis:
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
