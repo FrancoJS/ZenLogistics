@@ -6,3 +6,4 @@ export * from './enums/auth-provider.enum';
 export * from './interfaces/active-user.interface';
 export * from './hashing/hashing.module';
 export * from './interfaces/hashing-service.interface';
+export * from './redis/redis.module';

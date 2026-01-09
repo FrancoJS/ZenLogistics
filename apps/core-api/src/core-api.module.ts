@@ -5,6 +5,7 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { RedisModule } from '@app/common';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    RedisModule,
   ],
   controllers: [CoreApiController],
   providers: [CoreApiService],
