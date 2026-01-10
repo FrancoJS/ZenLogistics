@@ -7,3 +7,4 @@ export * from './interfaces/active-user.interface';
 export * from './hashing/hashing.module';
 export * from './interfaces/hashing-service.interface';
 export * from './redis/redis.module';
+export * from './redis/cache.service';

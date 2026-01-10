@@ -2,18 +2,16 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from '../../users/users.service';
 import { ConfigService } from '@nestjs/config';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { IJwtPayload } from '../interfaces/jwt-payload';
-import Redis from 'ioredis';
-import { IActiveUser, REDIS_CLIENT } from '@app/common';
+import { CacheService, IActiveUser } from '@app/common';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly userService: UsersService,
     configService: ConfigService,
-    @Inject(REDIS_CLIENT)
-    private readonly redis: Redis,
+    private readonly cacheService: CacheService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -27,14 +25,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const cacheKey = `user:active:${id}`;
 
-    const cachedUserJson = await this.redis.get(cacheKey);
+    const cachedUser = await this.cacheService.get<IActiveUser>(cacheKey);
 
-    if (cachedUserJson) {
-      const cachedUser: IActiveUser = JSON.parse(cachedUserJson) as IActiveUser;
+    if (cachedUser) {
+      if (cachedUser.tokenVersion === tokenVersion) {
+        return cachedUser;
+      }
 
-      if (cachedUser.tokenVersion === tokenVersion) return cachedUser;
-
-      await this.redis.del(cacheKey);
+      await this.cacheService.del(cacheKey);
     }
 
     const user = await this.userService.findForJwtValidate(id);
@@ -53,7 +51,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       tokenVersion: user.tokenVersion,
     };
 
-    await this.redis.set(cacheKey, JSON.stringify(activeUser), 'EX', 900);
+    void this.cacheService.set<IActiveUser>(cacheKey, activeUser, 900);
 
     return activeUser;
   }
