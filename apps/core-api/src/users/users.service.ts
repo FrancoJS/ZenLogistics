@@ -4,7 +4,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { ICreateLocalClientParams } from './interfaces/create-local-client-params.interface';
 import { ICreateLocalDriverParams } from './interfaces/create-local-driver-params.interface';
-import { DriverProfile } from './entities/driver.entity';
+import { DriverProfile } from './entities/driver-profile.entity';
 import { UserRole } from '../../../../libs/common/src/enums/user-role.enum';
 import { HASHING_SERVICE_TOKEN, IHashingService } from '@app/common';
 

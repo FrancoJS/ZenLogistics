@@ -3,6 +3,7 @@ import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { User } from './user.entity';
 import { DriverDocumentsDto } from '../dto/driver-documents.dto';
 import { Exclude } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum DriverStatus {
   ONLINE = 'online', // Puede recibir pedidos
@@ -13,12 +14,21 @@ export enum DriverStatus {
 
 @Entity('driver_profiles')
 export class DriverProfile extends AbstractEntity {
+  @ApiProperty({ example: '12.345.678-9', description: 'Rut del conductor' })
   @Column({ type: 'varchar', unique: true, length: 12, nullable: true })
   rut: string | null;
 
+  @ApiProperty({
+    example: 'AB123456',
+    description: 'Número de licencia de conducir',
+  })
   @Column({ type: 'varchar', unique: true, length: 12 })
   licenseNumber: string;
 
+  @ApiProperty({
+    example: '2025-12-31',
+    description: 'Fecha de expiración de la licencia',
+  })
   @Column({ type: 'date', nullable: true })
   licenseExpiryDate: Date | null;
 
@@ -26,9 +36,11 @@ export class DriverProfile extends AbstractEntity {
   @Column({ type: 'date', nullable: true })
   lastBackgroundCheckDate: Date | null;
 
+  @ApiProperty({ example: false })
   @Column({ default: false })
   isVerified: boolean;
 
+  @ApiProperty({ enum: DriverStatus, example: DriverStatus.OFFLINE })
   @Column({ type: 'enum', enum: DriverStatus, default: DriverStatus.OFFLINE })
   status: DriverStatus;
 
@@ -39,6 +51,15 @@ export class DriverProfile extends AbstractEntity {
       "licenseBack": { "url": "s3://..." },
       "criminalRecord": { "url": "s3://..." }
     }*/
+  @ApiProperty({
+    example: {
+      licenseFront: { url: 's3://...', uploadedAt: '2023-10-10' },
+      licenseBack: { url: 's3://...' },
+      criminalRecord: { url: 's3://...' },
+    },
+    description:
+      'Documentos del conductor, como licencia de conducir y antecedentes',
+  })
   @Column({ type: 'jsonb', nullable: true })
   documents: DriverDocumentsDto | null;
 

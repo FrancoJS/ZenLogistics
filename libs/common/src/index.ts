@@ -3,6 +3,7 @@ export * from './filters/db-exception.filter';
 export * from './decorators/get-user.decorator';
 export * from './enums/user-role.enum';
 export * from './enums/auth-provider.enum';
+export * from './enums/subscription-plan.enum';
 export * from './interfaces/active-user.interface';
 export * from './hashing/hashing.module';
 export * from './interfaces/hashing-service.interface';
