@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterLocalClientDto } from './dto/register-local-client.dto';
-import { RegisterLocalDriverDto } from './dto/register-local-driver.dto';
+import { RegisterLocalClientDto } from './dto/register-company.dto';
+import { RegisterLocalDriverDto } from '../users/dto/register-driver.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { IRefreshTokenPayload } from './interfaces/refresh-jwt-payload';

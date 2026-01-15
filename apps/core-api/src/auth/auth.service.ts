@@ -1,7 +1,7 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { RegisterLocalClientDto } from './dto/register-local-client.dto';
-import { RegisterLocalDriverDto } from './dto/register-local-driver.dto';
+import { RegisterLocalClientDto } from './dto/register-company.dto';
+import { RegisterLocalDriverDto } from '../users/dto/register-driver.dto';
 import { AuthProvider } from '../../../../libs/common/src/enums/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from './interfaces/jwt-payload';

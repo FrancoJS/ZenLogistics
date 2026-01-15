@@ -4,7 +4,7 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class LoginUserDto {
   @ApiProperty({
-    example: 'example@example.com',
+    example: 'admin@example.com',
   })
   @Transform(({ value }: TransformFnParams) => {
     return typeof value === 'string'

@@ -1,19 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { TransformFnParams } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsStrongPassword,
   Matches,
-  MinLength,
-  ValidateNested,
 } from 'class-validator';
-import { DriverDocumentsDto } from '../../users/dto/driver-documents.dto';
 
-export class RegisterLocalDriverDto {
+export class RegisterDriverDto {
   @ApiProperty({
     example: 'Juan Pérez',
     required: true,
@@ -39,45 +35,22 @@ export class RegisterLocalDriverDto {
   email: string;
 
   @ApiProperty({
-    example: 'ClaveSegura123!',
+    example: '+56912345678',
     required: true,
-    minLength: 8,
   })
   @IsString()
   @IsNotEmpty()
-  @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
-  @IsStrongPassword(
-    {
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 1,
-    },
-    {
-      message:
-        'La contraseña no es lo suficientemente fuerte. Debe incluir al menos una letra mayúscula, una letra minúscula, un número y un símbolo.',
-    },
-  )
-  password: string;
+  @Matches(/^\+569[0-9]{8}$/, {
+    message: 'El teléfono debe tener formato chileno válido (Ej: +56912345678)',
+  })
+  phone: string;
 
   @ApiProperty({
-    example: '+56912345678',
+    example: '12345678k',
     required: false,
   })
   @IsString()
   @IsOptional()
-  @Matches(/^\+569[0-9]{8}$/, {
-    message: 'El teléfono debe tener formato chileno válido (Ej: +56912345678)',
-  })
-  phone?: string;
-
-  @ApiProperty({
-    example: '12345678k',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
   @Transform(({ value }) => {
     if (typeof value !== 'string') return value as string;
 
@@ -86,15 +59,14 @@ export class RegisterLocalDriverDto {
   @Matches(/^[0-9]{7,8}[0-9K]$/, {
     message: 'El formato del RUT no es válido (ej: 12345678K)',
   })
-  rut: string;
+  rut?: string;
 
   @ApiProperty({
-    description: 'Documentos del conductor para verificación',
-    type: () => DriverDocumentsDto,
+    example: 'EMP-001',
+    description: 'Código interno de empleado',
     required: false,
   })
+  @IsString()
   @IsOptional()
-  @Type(() => DriverDocumentsDto)
-  @ValidateNested()
-  documents?: DriverDocumentsDto;
+  employeeId?: string;
 }

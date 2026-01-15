@@ -11,12 +11,39 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class RegisterLocalClientDto {
+export class RegisterCompanyDto {
+  @ApiProperty({
+    example: 'Transportes Express Ltda.',
+    description: 'Razón social de la empresa',
+  })
+  @Transform(({ value }: TransformFnParams) => {
+    return typeof value === 'string' ? value.trim() : (value as string);
+  })
+  @IsString()
+  @IsNotEmpty()
+  companyName: string;
+
+  @ApiProperty({
+    example: '76.123.456-K',
+    description: 'RUT de la empresa',
+  })
+  @IsString()
+  @IsNotEmpty()
+  companyRut: string;
+
+  @ApiProperty({
+    example: 'Av. Siempre Viva 742',
+    description: 'Dirección de la empresa',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  companyAddress?: string;
+
+  // Usuario administrador de la empresa
   @ApiProperty({
     example: 'Juan Pérez',
-  })
-  @Transform(({ value }) => {
-    return typeof value === 'string' ? value.trim() : (value as string);
+    description: 'Nombre del administrador',
   })
   @IsString()
   @IsNotEmpty()
