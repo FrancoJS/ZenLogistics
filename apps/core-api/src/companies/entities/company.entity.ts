@@ -19,7 +19,7 @@ export class Company extends AbstractEntity {
 
   @ApiProperty({ example: 'Av. Libertador Bernardo O Higgins 1234' })
   @Column({ nullable: true })
-  address: string;
+  address: string | null;
 
   @ApiProperty({ enum: SubscriptionPlan, example: SubscriptionPlan.BASIC })
   @Column({

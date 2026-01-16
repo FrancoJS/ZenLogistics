@@ -1,3 +1,4 @@
+import { CompaniesModule } from './../companies/companies.module';
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -13,6 +14,7 @@ import { HashingModule } from '@app/common';
 @Module({
   imports: [
     HashingModule,
+    CompaniesModule,
     UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({

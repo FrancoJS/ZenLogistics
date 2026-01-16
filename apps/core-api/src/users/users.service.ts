@@ -1,12 +1,17 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
-import { ICreateLocalClientParams } from './interfaces/create-local-client-params.interface';
-import { ICreateLocalDriverParams } from './interfaces/create-local-driver-params.interface';
+import { EntityManager, Repository } from 'typeorm';
+
 import { DriverProfile } from './entities/driver-profile.entity';
 import { UserRole } from '../../../../libs/common/src/enums/user-role.enum';
-import { HASHING_SERVICE_TOKEN, IHashingService } from '@app/common';
+import {
+  AuthProvider,
+  HASHING_SERVICE_TOKEN,
+  IHashingService,
+} from '@app/common';
+import { CompanyAdminDto } from './dto/company-admin.dto';
+import { Company } from '../companies/entities/company.entity';
 
 @Injectable()
 export class UsersService {
@@ -17,43 +22,52 @@ export class UsersService {
     private readonly hashingService: IHashingService,
   ) {}
 
-  async createLocalClient(params: ICreateLocalClientParams) {
-    const hashedPassword = await this.hashingService.hash(params.password);
+  async createCompanyAdmin(
+    dto: CompanyAdminDto,
+    company: Company,
+    manager?: EntityManager,
+  ): Promise<User> {
+    const repo = manager ? manager.getRepository(User) : this.userRepository;
 
-    const user = this.userRepository.create({
-      ...params,
+    const hashedPassword = await this.hashingService.hash(dto.password);
+
+    const newAdmin = repo.create({
+      ...dto,
       password: hashedPassword,
-      role: UserRole.CLIENT,
+      company: company,
+      role: UserRole.COMPANY_ADMIN,
+      authProvider: AuthProvider.LOCAL,
+      isEmailVerified: false,
     });
 
-    return await this.userRepository.save(user);
+    return repo.save(newAdmin);
   }
 
-  async createLocalDriver(params: ICreateLocalDriverParams) {
-    const { rut, documents, ...userData } = params;
+  // async createLocalDriver(params: ICreateLocalDriverParams) {
+  //   const { rut, documents, ...userData } = params;
 
-    const licenseNumber = rut;
-    const driverProfile = new DriverProfile();
+  //   const licenseNumber = rut;
+  //   const driverProfile = new DriverProfile();
 
-    driverProfile.rut = rut;
-    driverProfile.licenseNumber = licenseNumber;
+  //   driverProfile.rut = rut;
+  //   driverProfile.licenseNumber = licenseNumber;
 
-    if (documents) {
-      driverProfile.documents = documents;
-    }
+  //   if (documents) {
+  //     driverProfile.documents = documents;
+  //   }
 
-    const hashedPassword = await this.hashingService.hash(params.password);
-    const user = this.userRepository.create({
-      ...userData,
-      password: hashedPassword,
-      role: UserRole.DRIVER,
-    });
+  //   const hashedPassword = await this.hashingService.hash(params.password);
+  //   const user = this.userRepository.create({
+  //     ...userData,
+  //     password: hashedPassword,
+  //     role: UserRole.DRIVER,
+  //   });
 
-    user.driverProfile = driverProfile;
-    driverProfile.user = user;
+  //   user.driverProfile = driverProfile;
+  //   driverProfile.user = user;
 
-    return await this.userRepository.save(user);
-  }
+  //   return await this.userRepository.save(user);
+  // }
 
   async findForLogin(email: string) {
     return this.userRepository

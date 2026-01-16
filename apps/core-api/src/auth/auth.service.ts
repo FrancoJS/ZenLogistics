@@ -1,7 +1,5 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { RegisterLocalClientDto } from './dto/register-company.dto';
-import { RegisterLocalDriverDto } from '../users/dto/register-driver.dto';
 import { AuthProvider } from '../../../../libs/common/src/enums/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from './interfaces/jwt-payload';
@@ -10,17 +8,25 @@ import {
   HASHING_SERVICE_TOKEN,
   IActiveUser,
   IHashingService,
+  UserRole,
 } from '@app/common';
 import { User } from '../users/entities/user.entity';
+import { RegisterCompanyDto } from './dto/register-company.dto';
+import { CompaniesService } from '../companies/companies.service';
+import { DataSource } from 'typeorm';
+import { CreateCompanyDto } from '../companies/dto/create-company.dto';
+import { CompanyAdminDto } from '../users/dto/company-admin.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UsersService,
+    private readonly companiesService: CompaniesService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @Inject(HASHING_SERVICE_TOKEN)
     private readonly hashingService: IHashingService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async login(user: IActiveUser) {
@@ -49,41 +55,60 @@ export class AuthService {
     }
   }
 
-  async registerLocalClient(dto: RegisterLocalClientDto) {
-    const user = await this.userService.createLocalClient({
-      ...dto,
-      authProvider: AuthProvider.LOCAL,
-    });
+  async registerCompany(dto: RegisterCompanyDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const createCompanyData: CreateCompanyDto = {
+        name: dto.companyName,
+        rut: dto.companyRut,
+        address: dto.companyAddress,
+      };
 
-    return await this.generateAuthResponse(user);
-  }
+      const savedCompany = await this.companiesService.create(
+        createCompanyData,
+        queryRunner.manager,
+      );
 
-  async registerLocalDriver(dto: RegisterLocalDriverDto) {
-    const user = await this.userService.createLocalDriver({
-      ...dto,
-      authProvider: AuthProvider.LOCAL,
-    });
+      const companyAdminData: CompanyAdminDto = {
+        fullName: dto.fullName,
+        email: dto.email,
+        password: dto.password,
+        phone: dto.phone,
+      };
 
-    return await this.generateAuthResponse(user);
-  }
+      const newAdmin = await this.userService.createCompanyAdmin(
+        companyAdminData,
+        savedCompany,
+        queryRunner.manager,
+      );
 
-  private async generateAuthResponse(user: User) {
-    const activeUser: IActiveUser = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      driverId: user.driverProfile?.id,
-      tokenVersion: user.tokenVersion,
-    };
+      await queryRunner.commitTransaction();
+      const activeUser: IActiveUser = {
+        id: newAdmin.id,
+        email: newAdmin.email,
+        role: newAdmin.role,
+        driverId: newAdmin.driverProfile?.id,
+        tokenVersion: newAdmin.tokenVersion,
+      };
 
-    const tokens = await this.getTokens(activeUser);
+      const tokens = await this.getTokens(activeUser);
 
-    await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
-
-    return {
-      user,
-      tokens,
-    };
+      await this.updateRefreshTokenHash(newAdmin.id, tokens.refreshToken);
+      return {
+        message: 'Empresa Creada con exito',
+        company: savedCompany,
+        companyAdmin: newAdmin,
+        tokens,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      // Libera la conexion
+      await queryRunner.release();
+    }
   }
 
   private async getTokens(user: IActiveUser) {
