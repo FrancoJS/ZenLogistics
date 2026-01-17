@@ -21,7 +21,7 @@ export class User extends AbstractEntity {
 
   @ApiProperty({ example: '+56912345678', required: false })
   @Column({ type: 'varchar', length: 20, nullable: true, unique: true })
-  phone: string;
+  phone: string | null;
 
   @ApiProperty({ enum: UserRole, example: UserRole.COMPANY_ADMIN })
   @Column({ type: 'enum', enum: UserRole, default: UserRole.COMPANY_ADMIN })

@@ -9,7 +9,7 @@ import {
   Matches,
 } from 'class-validator';
 
-export class RegisterDriverDto {
+export class CreateDriverDto {
   @ApiProperty({
     example: 'Juan Pérez',
     required: true,
@@ -36,15 +36,14 @@ export class RegisterDriverDto {
 
   @ApiProperty({
     example: '+56912345678',
-    required: true,
+    required: false,
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @Matches(/^\+569[0-9]{8}$/, {
     message: 'El teléfono debe tener formato chileno válido (Ej: +56912345678)',
   })
-  phone: string;
-
+  phone?: string;
   @ApiProperty({
     example: '12345678k',
     required: false,

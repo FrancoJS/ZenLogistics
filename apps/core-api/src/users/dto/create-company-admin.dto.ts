@@ -10,7 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CompanyAdminDto {
+export class CreateCompanyAdminDto {
   @ApiProperty({
     example: 'Juan Pérez',
     description: 'Nombre del administrador',

@@ -1,17 +1,17 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { EntityManager, Repository } from 'typeorm';
-
-import { DriverProfile } from './entities/driver-profile.entity';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { UserRole } from '../../../../libs/common/src/enums/user-role.enum';
 import {
   AuthProvider,
   HASHING_SERVICE_TOKEN,
   IHashingService,
 } from '@app/common';
-import { CompanyAdminDto } from './dto/company-admin.dto';
+import { CreateCompanyAdminDto } from './dto/create-company-admin.dto';
 import { Company } from '../companies/entities/company.entity';
+import { DriverProfile } from './entities/driver-profile.entity';
+import { CreateDriverDto } from './dto/create-driver.dto';
 
 @Injectable()
 export class UsersService {
@@ -20,10 +20,11 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @Inject(HASHING_SERVICE_TOKEN)
     private readonly hashingService: IHashingService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createCompanyAdmin(
-    dto: CompanyAdminDto,
+    dto: CreateCompanyAdminDto,
     company: Company,
     manager?: EntityManager,
   ): Promise<User> {
@@ -43,31 +44,61 @@ export class UsersService {
     return repo.save(newAdmin);
   }
 
-  // async createLocalDriver(params: ICreateLocalDriverParams) {
-  //   const { rut, documents, ...userData } = params;
+  async createDriver(dto: CreateDriverDto, companyId: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-  //   const licenseNumber = rut;
-  //   const driverProfile = new DriverProfile();
+    try {
+      const txCompanyRepo = queryRunner.manager.getRepository(Company);
+      const txUserRepo = queryRunner.manager.getRepository(User);
+      const txProfileRepo = queryRunner.manager.getRepository(DriverProfile);
 
-  //   driverProfile.rut = rut;
-  //   driverProfile.licenseNumber = licenseNumber;
+      const company = await txCompanyRepo.findOne({ where: { id: companyId } });
 
-  //   if (documents) {
-  //     driverProfile.documents = documents;
-  //   }
+      if (!company) throw new NotFoundException('Empresa no válida');
 
-  //   const hashedPassword = await this.hashingService.hash(params.password);
-  //   const user = this.userRepository.create({
-  //     ...userData,
-  //     password: hashedPassword,
-  //     role: UserRole.DRIVER,
-  //   });
+      // Enviar credenciales por correo al driver en version mas avanzada
+      const tempPassword = 'ZenDriver123!'; // Solo por mvp, No estara hardcodeada en version mas avanzada
+      const hashedPassword = await this.hashingService.hash(tempPassword);
 
-  //   user.driverProfile = driverProfile;
-  //   driverProfile.user = user;
+      const newUser = txUserRepo.create({
+        fullName: dto.fullName,
+        email: dto.email,
+        phone: dto.phone || null,
+        password: hashedPassword,
+        role: UserRole.DRIVER,
+        authProvider: AuthProvider.LOCAL,
+        company: company,
+      });
 
-  //   return await this.userRepository.save(user);
-  // }
+      const savedUser = await txUserRepo.save(newUser);
+
+      const newProfile = txProfileRepo.create({
+        user: savedUser,
+        rut: dto.rut || null,
+        employeeId: dto.employeeId || null,
+      });
+
+      await txProfileRepo.save(newProfile);
+
+      await queryRunner.commitTransaction();
+
+      return {
+        driver: {
+          id: savedUser.id,
+          email: savedUser.email,
+          fullName: savedUser.fullName,
+        },
+        tempPassword: tempPassword,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
 
   async findForLogin(email: string) {
     return this.userRepository
