@@ -1,6 +1,5 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { AuthProvider } from '../../../../libs/common/src/enums/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from './interfaces/jwt-payload';
 import { ConfigService } from '@nestjs/config';
@@ -8,14 +7,12 @@ import {
   HASHING_SERVICE_TOKEN,
   IActiveUser,
   IHashingService,
-  UserRole,
 } from '@app/common';
-import { User } from '../users/entities/user.entity';
 import { RegisterCompanyDto } from './dto/register-company.dto';
 import { CompaniesService } from '../companies/companies.service';
 import { DataSource } from 'typeorm';
 import { CreateCompanyDto } from '../companies/dto/create-company.dto';
-import { CompanyAdminDto } from '../users/dto/company-admin.dto';
+import { CreateCompanyAdminDto } from '../users/dto/create-company-admin.dto';
 
 @Injectable()
 export class AuthService {
@@ -71,7 +68,7 @@ export class AuthService {
         queryRunner.manager,
       );
 
-      const companyAdminData: CompanyAdminDto = {
+      const companyAdminData: CreateCompanyAdminDto = {
         fullName: dto.fullName,
         email: dto.email,
         password: dto.password,
@@ -85,12 +82,14 @@ export class AuthService {
       );
 
       await queryRunner.commitTransaction();
+
       const activeUser: IActiveUser = {
         id: newAdmin.id,
         email: newAdmin.email,
         role: newAdmin.role,
         driverId: newAdmin.driverProfile?.id,
         tokenVersion: newAdmin.tokenVersion,
+        companyId: newAdmin.companyId,
       };
 
       const tokens = await this.getTokens(activeUser);
@@ -117,6 +116,7 @@ export class AuthService {
       email: user.email,
       role: user.role,
       ver: user.tokenVersion,
+      companyId: user.companyId,
     };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -159,6 +159,7 @@ export class AuthService {
       role: user.role,
       driverId: user.driverProfile?.id,
       tokenVersion: user.tokenVersion,
+      companyId: user.companyId,
     };
 
     const tokens = await this.getTokens(activeUser);

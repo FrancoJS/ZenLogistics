@@ -1,28 +1,36 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterLocalClientDto } from './dto/register-company.dto';
-import { RegisterLocalDriverDto } from '../users/dto/register-driver.dto';
+import { RegisterCompanyDto } from './dto/register-company.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { IRefreshTokenPayload } from './interfaces/refresh-jwt-payload';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { GetUser } from '@app/common';
 import { IActiveUser } from '@app/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register/client')
-  async registerLocalClient(@Body() dto: RegisterLocalClientDto) {
-    return await this.authService.registerLocalClient(dto);
+  @Post('register-company')
+  @ApiOperation({
+    summary: 'Registrar una nueva empresa + Admin',
+    description: 'Crear una nueva empresa y su usuario administrador',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Empresa y usuario administrador creados exitosamente',
+  })
+  async registerCompany(@Body() dto: RegisterCompanyDto) {
+    return await this.authService.registerCompany(dto);
   }
 
-  @Post('register/driver')
-  async registerLocalDriver(@Body() dto: RegisterLocalDriverDto) {
-    return await this.authService.registerLocalDriver(dto);
-  }
-
+  @ApiResponse({
+    status: 200,
+    description: 'Login exitoso, devuelve los access y refresh tokens',
+  })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@GetUser() user: IActiveUser) {

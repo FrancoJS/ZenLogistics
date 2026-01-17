@@ -49,6 +49,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       role: user.role,
       driverId: user.driverProfile?.id,
       tokenVersion: user.tokenVersion,
+      companyId: user.companyId,
     };
 
     void this.cacheService.set<IActiveUser>(cacheKey, activeUser, 900);

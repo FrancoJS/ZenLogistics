@@ -6,4 +6,5 @@ export interface IActiveUser {
   role: UserRole;
   driverId: string | null;
   tokenVersion: number;
+  companyId?: string;
 }
