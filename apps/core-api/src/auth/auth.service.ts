@@ -1,7 +1,7 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { IJwtPayload } from './interfaces/jwt-payload';
+import { IJwtPayload } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import {
   HASHING_SERVICE_TOKEN,
