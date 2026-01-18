@@ -8,6 +8,7 @@ import { JwtAuthGuard } from '@app/common';
 import { GetUser } from '@app/common';
 import { IActiveUser } from '@app/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -27,13 +28,17 @@ export class AuthController {
     return await this.authService.registerCompany(dto);
   }
 
+  @Post('login')
+  @ApiOperation({
+    summary: 'Login de usuario',
+    description: 'Autenticar un usuario y obtener tokens de acceso y refresco',
+  })
   @ApiResponse({
     status: 200,
     description: 'Login exitoso, devuelve los access y refresh tokens',
   })
   @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async login(@GetUser() user: IActiveUser) {
+  async login(@GetUser() user: IActiveUser, @Body() dto: LoginUserDto) {
     return await this.authService.login(user);
   }
 

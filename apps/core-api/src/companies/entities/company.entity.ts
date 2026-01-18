@@ -18,7 +18,7 @@ export class Company extends AbstractEntity {
   rut: string;
 
   @ApiProperty({ example: 'Av. Libertador Bernardo O Higgins 1234' })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   address: string | null;
 
   @ApiProperty({ enum: SubscriptionPlan, example: SubscriptionPlan.BASIC })

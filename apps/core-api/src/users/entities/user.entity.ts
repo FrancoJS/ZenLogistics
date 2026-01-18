@@ -1,5 +1,12 @@
 import { AbstractEntity, AuthProvider, UserRole } from '@app/common';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { DriverProfile } from './driver-profile.entity';
 import { Exclude } from 'class-transformer';
 import { Company } from '../../companies/entities/company.entity';
@@ -59,8 +66,10 @@ export class User extends AbstractEntity {
 
   @ManyToOne(() => Company, (company) => company.users, { nullable: true })
   @JoinColumn({ name: 'companyId' })
+  @Exclude()
   company: Company;
 
-  @Column({ nullable: true })
+  @Index()
+  @Column({ nullable: true, type: 'varchar' })
   companyId: string;
 }

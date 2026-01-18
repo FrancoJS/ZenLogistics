@@ -11,11 +11,12 @@ export * from './enums/auth-provider.enum';
 export * from './enums/subscription-plan.enum';
 // Interfaces
 export * from './interfaces/active-user.interface';
-export * from './interfaces/hashing-service.interface';
 export * from './interfaces/jwt-payload';
 export * from './interfaces/refresh-jwt-payload';
 // Hashing
+export * from './interfaces/hashing-service.interface';
 export * from './hashing/hashing.module';
+export * from './hashing/hashing.constants';
 // Redis Cache
 export * from './redis/redis.module';
 export * from './redis/cache.service';

@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ArgonService } from './argon.service';
-
-export const HASHING_SERVICE_TOKEN = 'HASHING_SERVICE_TOKEN';
+import { HASHING_SERVICE_TOKEN } from './hashing.constants';
 
 @Module({
   providers: [
-    ArgonService,
     {
       provide: HASHING_SERVICE_TOKEN,
       useClass: ArgonService,
