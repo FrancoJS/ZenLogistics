@@ -1,56 +1,71 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger'; // Solo conservamos este para agrupar
 import { AuthService } from './auth.service';
 import { RegisterCompanyDto } from './dto/register-company.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { IRefreshTokenPayload } from '@app/common';
-import { JwtAuthGuard } from '@app/common';
-import { GetUser } from '@app/common';
-import { IActiveUser } from '@app/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { LoginUserDto } from './dto/login-user.dto';
+import {
+  IRefreshTokenPayload,
+  JwtAuthGuard,
+  GetUser,
+  IActiveUser,
+} from '@app/common';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Registrar una nueva empresa y su administrador
+   * * Crea la estructura base de la organización y el usuario root.
+   */
   @Post('register-company')
-  @ApiOperation({
-    summary: 'Registrar una nueva empresa + Admin',
-    description: 'Crear una nueva empresa y su usuario administrador',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Empresa y usuario administrador creados exitosamente',
-  })
+  // IMPORTANTE: Tipar el retorno para que Swagger sepa qué mostrar
   async registerCompany(@Body() dto: RegisterCompanyDto) {
-    return await this.authService.registerCompany(dto);
+    return this.authService.registerCompany(dto);
   }
 
-  @Post('login')
-  @ApiOperation({
-    summary: 'Login de usuario',
-    description: 'Autenticar un usuario y obtener tokens de acceso y refresco',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Login exitoso, devuelve los access y refresh tokens',
-  })
+  /**
+   * Iniciar sesión
+   * * Autentica credenciales y devuelve tokens de acceso.
+   */
+  @HttpCode(HttpStatus.OK) // 👈 Forzamos 200, porque @Post por defecto es 201
   @UseGuards(LocalAuthGuard)
-  async login(@GetUser() user: IActiveUser, @Body() dto: LoginUserDto) {
-    return await this.authService.login(user);
+  @Post('login')
+  async login(
+    @GetUser() user: IActiveUser,
+    // Mantenemos el Body aunque LocalGuard lo lea, para que aparezca en Swagger
+    @Body() dto: LoginUserDto,
+  ) {
+    return this.authService.login(user);
   }
 
+  /**
+   * Refrescar tokens de acceso
+   * * Usa el Refresh Token para obtener un nuevo Access Token sin loguearse.
+   */
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   async refreshTokens(
     @GetUser<IRefreshTokenPayload>('sub') userId: string,
     @GetUser<IRefreshTokenPayload>('refreshToken') refreshToken: string,
   ) {
-    return await this.authService.refreshTokens(userId, refreshToken);
+    return this.authService.refreshTokens(userId, refreshToken);
   }
 
+  /**
+   * Perfil del usuario actual
+   */
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@GetUser() user: IActiveUser) {

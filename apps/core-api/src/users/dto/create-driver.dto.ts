@@ -1,6 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { TransformFnParams } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -10,61 +8,60 @@ import {
 } from 'class-validator';
 
 export class CreateDriverDto {
-  @ApiProperty({
-    example: 'Juan Pérez',
-    required: true,
-  })
-  @Transform(({ value }) => {
-    return typeof value === 'string' ? value.trim() : (value as string);
-  })
+  /**
+   * Nombre completo del conductor
+   * @example 'Juan Pérez'
+   */
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim() : (value as string),
+  )
   @IsString()
   @IsNotEmpty()
   fullName: string;
 
-  @ApiProperty({
-    example: 'example@example.com',
-    required: true,
-  })
-  @Transform(({ value }: TransformFnParams) => {
-    return typeof value === 'string'
-      ? value.trim().toLowerCase()
-      : (value as string);
-  })
+  /**
+   * Correo electrónico de contacto
+   * @example 'example@example.com'
+   */
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : (value as string),
+  )
   @IsNotEmpty()
   @IsEmail({}, { message: 'El correo electrónico no es válido' })
   email: string;
 
-  @ApiProperty({
-    example: '+56912345678',
-    required: false,
-  })
+  /**
+   * Teléfono móvil (Formato Chile)
+   * @example '+56912345678'
+   */
   @IsString()
   @IsOptional()
   @Matches(/^\+569[0-9]{8}$/, {
     message: 'El teléfono debe tener formato chileno válido (Ej: +56912345678)',
   })
   phone?: string;
-  @ApiProperty({
-    example: '12345678k',
-    required: false,
+
+  /**
+   * RUT del conductor (Sin puntos ni guión)
+   * Se formatea automáticamente a mayúsculas y sin caracteres especiales.
+   * @example '12345678K'
+   */
+  @Transform(({ value }) => {
+    if (typeof value !== 'string') return value as string;
+    // Elimina todo lo que no sea número o K, y lo pasa a mayúsculas
+    return value.replace(/[^0-9kK]/g, '').toUpperCase();
   })
   @IsString()
   @IsOptional()
-  @Transform(({ value }) => {
-    if (typeof value !== 'string') return value as string;
-
-    return value.replace(/[^0-9kK]/g, '').toUpperCase();
-  })
   @Matches(/^[0-9]{7,8}[0-9K]$/, {
     message: 'El formato del RUT no es válido (ej: 12345678K)',
   })
   rut?: string;
 
-  @ApiProperty({
-    example: 'EMP-001',
-    description: 'Código interno de empleado',
-    required: false,
-  })
+  /**
+   * Código interno de empleado
+   * @example 'EMP-001'
+   */
   @IsString()
   @IsOptional()
   employeeId?: string;

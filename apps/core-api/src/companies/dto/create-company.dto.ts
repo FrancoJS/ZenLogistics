@@ -1,18 +1,26 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCompanyDto {
-  @ApiProperty({ example: 'Transportes Rápidos Ltda' })
+  /**
+   * Nombre o Razón Social de la empresa
+   * @example 'Transportes Rápidos Ltda'
+   */
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: '76.123.456-K' })
+  /**
+   * Identificador tributario (RUT)
+   * @example '76.123.456-K'
+   */
   @IsString()
   @IsNotEmpty()
   rut: string;
 
-  @ApiProperty({ example: 'Av. Siempre Viva 123', required: false })
+  /**
+   * Dirección comercial
+   * @example 'Av. Siempre Viva 123'
+   */
   @IsString()
   @IsOptional()
   address?: string;
