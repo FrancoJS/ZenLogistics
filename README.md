@@ -50,12 +50,6 @@ Sigue estos pasos para levantar el proyecto en tu máquina local.
 
 ## 2. Clonar el Repositorio
 
-```bash
-git clone [https://github.com/tu-usuario/zen-logistics-backend.git](https://github.com/tu-usuario/zen-logistics-backend.git)
-cd zen-logistics-backend
-npm install
-```
-
 ## 3. Configuración de Variables de Entorno
 
 Crea un archivo llamado `.env` en la raíz del proyecto y pega la siguiente configuración base:
