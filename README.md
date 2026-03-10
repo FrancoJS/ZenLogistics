@@ -48,8 +48,9 @@ Sigue estos pasos para levantar el proyecto en tu máquina local.
 - [Node.js](https://nodejs.org/) (v18 o superior)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (debe estar corriendo)
 
-## 2. Clonar el Repositorio
+## 2. Obtener el Código Fuente
 
+Descarga este repositorio desde GitHub como archivo ZIP o añádelo a tu entorno local usando tu cliente Git preferido (por ejemplo, mediante la opción **"Code" → "Download ZIP"** en la página del repositorio).
 ## 3. Configuración de Variables de Entorno
 
 Crea un archivo llamado `.env` en la raíz del proyecto y pega la siguiente configuración base:
