@@ -1,0 +1,3 @@
+describe('LoginUserDto', () => {
+  it('', () => {});
+});

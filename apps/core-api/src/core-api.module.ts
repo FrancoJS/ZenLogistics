@@ -1,23 +1,32 @@
 import { Module } from '@nestjs/common';
 import { CoreApiController } from './core-api.controller';
 import { CoreApiService } from './core-api.service';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from '@app/common';
 import { CompaniesModule } from './companies/companies.module';
-import { typeOrmSharedOptions } from './database/data-source';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }),
-    TypeOrmModule.forRoot({
-      ...(typeOrmSharedOptions as TypeOrmModuleOptions),
-      autoLoadEntities: true,
+    TypeOrmModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USER'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_NAME'),
+        autoLoadEntities: true,
+        synchronize: false,
+      }),
     }),
     UsersModule,
     AuthModule,
@@ -26,5 +35,5 @@ import { typeOrmSharedOptions } from './database/data-source';
   ],
   controllers: [CoreApiController],
   providers: [CoreApiService],
-})
+import { typeOrmSharedOptions } from './database/typeorm.shared';
 export class CoreApiModule {}
