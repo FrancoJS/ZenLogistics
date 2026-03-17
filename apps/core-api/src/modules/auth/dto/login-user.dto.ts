@@ -1,5 +1,10 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 
 export class LoginUserDto {
   /**
@@ -7,7 +12,7 @@ export class LoginUserDto {
    * @example 'admin@example.com'
    */
   @Transform(({ value }) =>
-    typeof value === 'string' ? value.trim().toLowerCase() : (value as string),
+    typeof value === 'string' ? value.trim().toLowerCase() : (value as unknown),
   )
   @IsNotEmpty()
   @IsEmail({}, { message: 'El correo electrónico no es válido' })
@@ -19,6 +24,12 @@ export class LoginUserDto {
    */
   @IsString()
   @IsNotEmpty()
-  @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
+  @IsStrongPassword({
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+  })
   password: string;
 }

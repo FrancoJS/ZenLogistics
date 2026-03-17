@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { UserRole } from '../../../../libs/common/src/enums/user-role.enum';
+import { UserRole } from '../../../../../libs/common/src/enums/user-role.enum';
 import {
   AuthProvider,
   HASHING_SERVICE_TOKEN,

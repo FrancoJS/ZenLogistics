@@ -19,7 +19,9 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@app/common": ["libs/common/src"],
-      "@app/common/*": ["libs/common/src/*"]
+      "@app/common/*": ["libs/common/src/*"],
+      "@modules/*": ["apps/core-api/src/modules/*"],
+      "@core/*": ["apps/core-api/src/core/*"]
     }
   }
 }

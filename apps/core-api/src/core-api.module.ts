@@ -3,10 +3,10 @@ import { CoreApiController } from './core-api.controller';
 import { CoreApiService } from './core-api.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from '@modules/auth/auth.module';
 import { RedisModule } from '@app/common';
-import { CompaniesModule } from './companies/companies.module';
+import { CompaniesModule } from './modules/companies/companies.module';
 
 @Module({
   imports: [
