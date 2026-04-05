@@ -4,6 +4,8 @@ import { User } from './user.entity';
 import { DriverDocumentsDto } from '../dto/driver-documents.dto';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Vehicle } from '../../vehicles/entities/vehicle.entity';
+import { OneToMany } from 'typeorm';
 
 export enum DriverStatus {
   ONLINE = 'online', // Puede recibir pedidos
@@ -97,4 +99,7 @@ export class DriverProfile extends AbstractEntity {
   @JoinColumn()
   @Exclude()
   user: User;
+
+  @OneToMany(() => Vehicle, (vehicle) => vehicle.driverProfile)
+  vehicles: Vehicle[];
 }

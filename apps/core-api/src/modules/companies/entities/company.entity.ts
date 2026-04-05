@@ -3,6 +3,7 @@ import { SubscriptionPlan } from '@app/common/enums/subscription-plan.enum';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Vehicle } from '../../vehicles/entities/vehicle.entity';
 
 @Entity('companies')
 export class Company extends AbstractEntity {
@@ -35,4 +36,7 @@ export class Company extends AbstractEntity {
 
   @OneToMany(() => User, (user) => user.company)
   users: User[];
+
+  @OneToMany(() => Vehicle, (vehicle) => vehicle.company)
+  vehicles: Vehicle[];
 }
