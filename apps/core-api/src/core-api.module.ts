@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { RedisModule } from '@app/common';
 import { CompaniesModule } from './modules/companies/companies.module';
+import { VehiclesModule } from './modules/vehicles/vehicles.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CompaniesModule } from './modules/companies/companies.module';
     AuthModule,
     RedisModule,
     CompaniesModule,
+    VehiclesModule,
   ],
   controllers: [CoreApiController],
   providers: [CoreApiService],
